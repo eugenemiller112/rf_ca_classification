@@ -17,7 +17,8 @@ import os
 def randomForest(data, response):
     X = data    # n x p x p (n = num samples, p = 256)
     y = response    # n x 1 (n = num samples, 1 = res, 0 = sus)
-
+    print(X)
+    print(y)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     y_train = np.array([number[0] for number in LabelBinarizer.fit_transform(y_train)])
     eval_cls = RandomForestClassifier(n_estimators=1000, max_features="sqrt")
@@ -39,8 +40,8 @@ def loadData(dir):
         for datum in os.listdir(os.path.join(dir, cat)):
             im = Image.open(os.path.join(os.path.join(dir,cat),datum))
             arr = np.asarray(im)
-            np.append(X, arr)
-            np.append(y, i)
+            X = np.append(X, arr)
+            y = np.append(y, i)
         i += 1
     print("Fin")
     return [X, y]

@@ -17,10 +17,12 @@ import os
 def randomForest(data, response):
     X = data    # n x p x p (n = num samples, p = 256)
     y = response    # n x 1 (n = num samples, 1 = res, 0 = sus)
-    print(X)
-    print(y)
+    #print(X)
+    #print(y)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    y_train = np.array([number[0] for number in LabelBinarizer.fit_transform(y_train)])
+    print(y_train)
+    lb = LabelBinarizer()
+    y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
     eval_cls = RandomForestClassifier(n_estimators=1000, max_features="sqrt")
     eval_cls.fit(X_train, y_train) 
 
@@ -39,16 +41,22 @@ def loadData(dir):
         print(cat, "is class:", i)
         for datum in os.listdir(os.path.join(dir, cat)):
             im = Image.open(os.path.join(os.path.join(dir,cat),datum))
+            im = im.resize((256,256))
             arr = np.asarray(im)
-            X = np.append(X, arr)
-            y = np.append(y, i)
+            X.append(arr)
+            y.append(i)
         i += 1
     print("Fin")
     return [X, y]
 
 [X, y] = loadData(r'C:\Users\eugmille\Desktop\rf_test_data')
 
-print(randomForest(X, y))
+dict = randomForest(X, y)
+
+print("acc", dict["accuracy"])
+print("f1", dict["f1"])
+print("pres", dict["pres"])
+print("recall", dict["recall"])
 
 
 

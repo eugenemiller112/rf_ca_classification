@@ -26,13 +26,13 @@ def randomForest(data, response):
     #print(y_train)
     lb = LabelBinarizer()
     y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
-    eval_cls = RandomForestClassifier(n_estimators=1000, max_features="sqrt")
-    eval_cls.fit(X_train, y_train) 
+    rf = RandomForestClassifier(n_estimators=1000, max_features="sqrt")
+    rf.fit(X_train, y_train)
 
-    recall = cross_val_score(eval_cls, X_test, y_test, cv=5, scoring='recall')
-    precision = cross_val_score(eval_cls, X_test, y_test, cv=5, scoring='precision')
-    accuracy = cross_val_score(eval_cls, X_test, y_test, cv=5, scoring='accuracy')
-    f1_score = cross_val_score(eval_cls, X_test, y_test, cv=5, scoring='f1_macro')
+    recall = cross_val_score(rf, X_test, y_test, cv=5, scoring='recall')
+    precision = cross_val_score(rf, X_test, y_test, cv=5, scoring='precision')
+    accuracy = cross_val_score(rf, X_test, y_test, cv=5, scoring='accuracy')
+    f1_score = cross_val_score(rf, X_test, y_test, cv=5, scoring='f1_macro')
 
     return {'accuracy': accuracy, 'f1': f1_score, 'precision': precision, 'recall': recall}
 
@@ -61,10 +61,10 @@ print(X.shape[1])
 print(y.shape)
 dict = randomForest(X, y)
 
-print("acc", dict["accuracy"])
-print("f1", dict["f1"])
-print("precision", dict["precision"])
-print("recall", dict["recall"])
+print("acc", np.mean(dict["accuracy"]))
+print("f1",np.mean(dict["f1"]))
+print("precision", np.mean(dict["precision"]))
+print("recall", np.mean(dict["recall"]))
 
 
 

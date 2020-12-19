@@ -26,7 +26,7 @@ def randomForest(data, response):
     #print(y_train)
     lb = LabelBinarizer()
     y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
-    rf = RandomForestClassifier(n_estimators=1000, max_features="sqrt")
+    rf = RandomForestClassifier(n_estimators=100, max_features="sqrt")
     rf.fit(X_train, y_train)
 
     recall = cross_val_score(rf, X_test, y_test, cv=5, scoring='recall')

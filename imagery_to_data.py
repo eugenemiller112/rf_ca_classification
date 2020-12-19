@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageChops, ImageStat
 from statistics import median
+from datetime import datetime
 import ntpath
 import time
 import tempfile
@@ -10,6 +11,7 @@ import shutil
 import math
 import glob
 import random
+
 import os, sys
 
 print(cv2.__version__)
@@ -93,3 +95,47 @@ def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None)
     print(save)
     img.save(save)
     return img2
+
+def main(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
+    save = r"D:\ASD"
+    now = datetime.now()
+    date_time = now.strftime("%m-%d-%Y, %H-%M-%S")
+    newdir = os.path.join(save, date_time)
+    os.mkdir(newdir)
+
+
+    for cl in os.listdir(data_path):
+        temp_dir = tempfile.mkdtemp()
+        temp_frames_dir = os.path.join(temp_dir, "framestemp"+str(cl))
+
+        viddir = os.path.join(data_path,cl)
+        for vid in os.listdir(viddir):
+            frame_extraction(os.path.join(viddir,vid), temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
+
+        for im in os.listdir(temp_frames_dir):
+            trim(os.path.join(temp_frames_dir, im)) # Trim frames
+            resize_squishy(os.path.join(temp_frames_dir, im), 256) # Resize them
+
+        # Generate diff images
+        for f in os.listdir(temp_frames_dir):
+            path = os.path.join(temp_frames_dir, f)
+            # efficiency for larger datasets
+            if (2 * small_delta - diff_upper_bound) >= 0:
+                list = np.empty(((2 * small_delta) - diff_upper_bound + 1),
+                                    dtype=object)  # array of proper size is declared
+                for i in range(0, small_delta):
+                        list[i] = diff_imager(path, newdir, i, i + small_delta)
+                for i in range(small_delta, diff_upper_bound):
+                        list[i] = diff_imager(path, newdir, i, i + small_delta, list[i])
+            else:
+                for i in range(0, diff_upper_bound):
+                    diff_imager(path, newdir, i, i + small_delta)
+
+
+        shutil.rmtree(temp_frames_dir)
+        print("Done")
+
+
+main(r"D:\2020-03-24 - ThT movies", 5, 30)
+
+

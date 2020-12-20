@@ -32,11 +32,11 @@ def frame_extraction(video_dir, save_dir, final_frame, greyscale = False):
             success, image = vidcap.read()
             count = 0
             success = True
-            if not os.path.exists(os.path.join(save_dir, filename)):
-                os.makedirs(os.path.join(save_dir, filename))
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
             while success and (count <= final_frame):  # every time a new image is detected
                 framename = "frame%d.jpg" % (count)
-                save = os.path.join(os.path.join(save_dir, filename), framename)
+                save = os.path.join(save_dir, filename + framename)
                 print(save)
 
                 if greyscale:
@@ -111,25 +111,24 @@ def main(data_path, small_delta, diff_upper_bound):    #data path assumed to hav
         frame_extraction(viddir, temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
 
         for fl in os.listdir(temp_frames_dir):
-            for vid in os.listdir(os.path.join(temp_frames_dir,fl)):
-                trim(os.path.join(temp_frames_dir,os.path.join(fl,vid))) # Trim frames
-                resize_squishy(os.path.join(temp_frames_dir,os.path.join(fl,vid)), 256) # Resize them
+            trim(os.path.join(temp_frames_dir,fl)) # Trim frames
+            resize_squishy(os.path.join(temp_frames_dir,fl), 256) # Resize them
 
         # Generate diff images
         for fl in os.listdir(temp_frames_dir):
-            p = os.path.join(temp_frames_dir, fl)
-            for vid in os.listdir(p):                # efficiency for larger datasets
-                path = os.path.join(p,vid)
-                if (2 * small_delta - diff_upper_bound) >= 0:
-                    list = np.empty(((2 * small_delta) - diff_upper_bound + 1),
+            path = os.path.join(temp_frames_dir, fl)
+
+            print("path",path)
+            if (2 * small_delta - diff_upper_bound) >= 0:   # efficiency for larger datasets
+                list = np.empty(((2 * small_delta) - diff_upper_bound + 1),
                                         dtype=object)  # array of proper size is declared
-                    for i in range(0, small_delta):
-                            list[i] = diff_imager(path, newdir, i, i + small_delta)
-                    for i in range(small_delta, diff_upper_bound):
-                            list[i] = diff_imager(path, newdir, i, i + small_delta, list[i])
-                else:
-                    for i in range(0, diff_upper_bound):
-                        diff_imager(path, newdir, i, i + small_delta)
+                for i in range(0, small_delta):
+                        list[i] = diff_imager(path, newdir, i, i + small_delta)
+                for i in range(small_delta, diff_upper_bound):
+                        list[i] = diff_imager(path, newdir, i, i + small_delta, saved_frame=list[i])
+            else:
+                for i in range(0, diff_upper_bound):
+                    diff_imager(path, newdir, i, i + small_delta)
 
 
         shutil.rmtree(temp_frames_dir)

@@ -36,7 +36,9 @@ def frame_extraction(video_dir, save_dir, final_frame, greyscale = False):
                 os.makedirs(save_dir)
             while success and (count <= final_frame):  # every time a new image is detected
                 framename = "frame%d.jpg" % (count)
-                save = os.path.join(save_dir, filename + framename)
+                if not os.path.exists(os.path.join(save_dir, filename.replace(".avi", "\\"))):
+                    os.mkdir(os.path.join(save_dir, filename.replace(".avi", "\\")))
+                save = os.path.join(save_dir, filename.replace(".avi", "\\") + framename)
                 print(save)
 
                 if greyscale:
@@ -65,6 +67,7 @@ def resize_squishy(image_path, sz, interpolate = False):
     im = cv2.imread(image_path)
     if interpolate:
         return cv2.resize(im, (sz, sz), interpolation=cv2.INTER_NEAREST)
+    print(len(cv2.resize(im, (sz,sz))))
     return cv2.resize(im, (sz,sz))
 
 
@@ -72,6 +75,7 @@ def resize_squishy(image_path, sz, interpolate = False):
 # matching the frames specified (first_frame, last_frame). Then calculates the difference in greyscale pixel values
 # and generates a new image to be saved in save_dir.
 def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None):
+    print("begin fun")
     name = os.path.basename(read_dir)
             # read in the desired first and last frames
 
@@ -80,21 +84,24 @@ def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None)
     # to boost efficiency, if the first frame was already read it can be handed to diff_imager to save time from cv2.imread()
     if saved_frame is None:
         img1 = cv2.imread(os.path.join(read_dir, 'frame%d.jpg' % first_frame))
+        print(os.path.join(read_dir, 'frame%d.jpg' % first_frame))
     else:
         img1 = saved_frame
-            # try converting these to doubles -- to increase resolution.
             # diff has the required difference data
     try:
+        print("diff")
         diff = np.abs(img1.astype(np.uint) - img2.astype(np.uint)).astype(np.uint8)
+        img = Image.fromarray(diff)
+        save = os.path.join(save_dir, (name + "diff(%d - %d).png" % (first_frame, last_frame)))
+        print(save)
+        img.save(save)
+        return img2
     except ValueError:      # in case for some reason the images were trimmed improperly, skips the iteration
         print("ValueError encountered")
 
+
             # Convert from array and save as image
-    img = Image.fromarray(diff)
-    save = os.path.join(save_dir, (name + "diff(%d - %d).png" % (first_frame, last_frame)))
-    print(save)
-    img.save(save)
-    return img2
+
 
 def main(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
     save = r"D:\ASD"
@@ -105,34 +112,50 @@ def main(data_path, small_delta, diff_upper_bound):    #data path assumed to hav
 
 
     for cl in os.listdir(data_path):
+        os.mkdir(os.path.join(newdir, cl))
+        save = os.path.join(newdir, cl)
         temp_dir = tempfile.mkdtemp()
         temp_frames_dir = os.path.join(temp_dir, "framestemp"+str(cl))
         viddir = os.path.join(data_path,cl)
         frame_extraction(viddir, temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
 
-        for fl in os.listdir(temp_frames_dir):
-            trim(os.path.join(temp_frames_dir,fl)) # Trim frames
-            resize_squishy(os.path.join(temp_frames_dir,fl), 256) # Resize them
+        for vid in os.listdir(temp_frames_dir):
+            p = os.path.join(temp_frames_dir, vid)
+            for fl in os.listdir(p):
+                print("fl", fl)
+                trim(os.path.join(p,fl)) # Trim frames
+                im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
+                im.save(os.path.join(p,fl)) # Resize them
 
         # Generate diff images
+
         for fl in os.listdir(temp_frames_dir):
+
             path = os.path.join(temp_frames_dir, fl)
 
             print("path",path)
-            if (2 * small_delta - diff_upper_bound) >= 0:   # efficiency for larger datasets
-                list = np.empty(((2 * small_delta) - diff_upper_bound + 1),
-                                        dtype=object)  # array of proper size is declared
-                for i in range(0, small_delta):
-                        list[i] = diff_imager(path, newdir, i, i + small_delta)
-                for i in range(small_delta, diff_upper_bound):
-                        list[i] = diff_imager(path, newdir, i, i + small_delta, saved_frame=list[i])
-            else:
-                for i in range(0, diff_upper_bound):
-                    diff_imager(path, newdir, i, i + small_delta)
+
+            #if (2 *  diff_upper_bound - small_delta) >= 0:   # efficiency for larger datasets
+            list_i = np.empty(diff_upper_bound,
+                                            dtype=object)  # array of proper size is declared
 
 
+
+                 #   if int(sum(list_i)) > small_delta:
+                  #      print(list_i)
+                   #     list_i[i+small_delta] = diff_imager(data_path, newdir, i , i+small_delta, saved_frame=list_i[i])
+            for i in range(0, diff_upper_bound):
+                    #    continue
+                list_i[i] = diff_imager(path, save, i, i + small_delta)
+                #else:
+                #    for i in range(0, diff_upper_bound):
+                #        diff_imager(path, newdir, i, i + small_delta)
+
+        print(temp_frames_dir)
+        print(os.listdir(temp_frames_dir))
         shutil.rmtree(temp_frames_dir)
         print("Done")
+    print(save)
 
 
 main(r"D:\2020-03-24 - ThT movies", 5, 30)

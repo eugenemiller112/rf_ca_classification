@@ -135,21 +135,17 @@ def main(data_path, small_delta, diff_upper_bound):    #data path assumed to hav
 
             print("path",path)
 
-            #if (2 *  diff_upper_bound - small_delta) >= 0:   # efficiency for larger datasets
-            list_i = np.empty(diff_upper_bound,
+            savedframes = np.empty(diff_upper_bound,
                                             dtype=object)  # array of proper size is declared
 
-
-
-                 #   if int(sum(list_i)) > small_delta:
-                  #      print(list_i)
-                   #     list_i[i+small_delta] = diff_imager(data_path, newdir, i , i+small_delta, saved_frame=list_i[i])
             for i in range(0, diff_upper_bound):
-                    #    continue
-                list_i[i] = diff_imager(path, save, i, i + small_delta)
-                #else:
-                #    for i in range(0, diff_upper_bound):
-                #        diff_imager(path, newdir, i, i + small_delta)
+                if i + 1 >= small_delta:
+                    savedframes[i] = diff_imager(path, save, i, i+small_delta, saved_frame = savedframes[i-diff_upper_bound])
+                    continue
+                savedframes[i] = diff_imager(path, save, i, i + small_delta)
+
+
+
 
         print(temp_frames_dir)
         print(os.listdir(temp_frames_dir))

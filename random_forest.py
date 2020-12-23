@@ -26,7 +26,7 @@ def randomForest(data, response):
     #print(y_train)
     lb = LabelBinarizer()
     y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
-    rf = RandomForestClassifier(n_estimators=100, max_features="sqrt")
+    rf = RandomForestClassifier(n_estimators=(256*256), max_features="sqrt")
     rf.fit(X_train, y_train)
 
     recall = cross_val_score(rf, X_test, y_test, cv=5, scoring='recall')
@@ -53,7 +53,7 @@ def loadData(dir):
     print("Fin")
     return [X, y]
 
-[X, y] = loadData(r'C:\Users\eugmille\Desktop\rf_test_data')
+[X, y] = loadData(r'D:\ASD\12-22-2020, 16-37-08')
 X = np.array(X)
 y = np.array(y)
 print(X.shape[0])

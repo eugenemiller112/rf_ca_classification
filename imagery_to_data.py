@@ -75,7 +75,6 @@ def resize_squishy(image_path, sz, interpolate = False):
 # matching the frames specified (first_frame, last_frame). Then calculates the difference in greyscale pixel values
 # and generates a new image to be saved in save_dir.
 def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None):
-    print("begin fun")
     name = os.path.basename(read_dir)
             # read in the desired first and last frames
 
@@ -89,7 +88,6 @@ def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None)
         img1 = saved_frame
             # diff has the required difference data
     try:
-        print("diff")
         diff = np.abs(img1.astype(np.uint) - img2.astype(np.uint)).astype(np.uint8)
         img = Image.fromarray(diff)
         save = os.path.join(save_dir, (name + "diff(%d - %d).png" % (first_frame, last_frame)))
@@ -154,6 +152,6 @@ def main(data_path, small_delta, diff_upper_bound):    #data path assumed to hav
     print(save)
 
 
-main(r"D:\2020-03-24 - ThT movies", 5, 30)
+main(r"D:\2020-03-24 - ThT movies", 1, 30)
 
 

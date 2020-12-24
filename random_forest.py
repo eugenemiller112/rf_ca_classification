@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 import sys
 import os
 
+from imagery_to_data import data_gen
+
 
 
 def randomForest(data, response):
@@ -53,7 +55,9 @@ def loadData(dir):
     print("Data Loaded!")
     return [X, y]
 
-[X, y] = loadData(r'D:\ASD\12-23-2020, 13-38-03')
+p = data_gen(r"D:\2020-03-24 - ThT movies", 3, 60)
+
+[X, y] = loadData(p)
 X = np.array(X)
 y = np.array(y)
 print(X.shape[0])

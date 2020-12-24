@@ -149,8 +149,8 @@ def data_gen(data_path, small_delta, diff_upper_bound):    #data path assumed to
         print(os.listdir(temp_frames_dir))
         shutil.rmtree(temp_frames_dir)
         print("Done")
-    print(save)
-    return save
+        print(save)
+    return newdir
 
 
 data_gen(r"D:\2020-03-24 - ThT movies", 3, 60)

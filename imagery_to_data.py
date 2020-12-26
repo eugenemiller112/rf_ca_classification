@@ -153,6 +153,5 @@ def data_gen(data_path, small_delta, diff_upper_bound):    #data path assumed to
     return newdir
 
 
-data_gen(r"D:\2020-03-24 - ThT movies", 3, 60)
 
 

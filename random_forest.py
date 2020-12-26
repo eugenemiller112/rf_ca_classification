@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import numpy as np
+import cv2
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import normalize
@@ -13,6 +14,7 @@ import sys
 import os
 
 from imagery_to_data import data_gen
+from unet import unet
 
 
 
@@ -55,11 +57,45 @@ def loadData(dir):
     print("Data Loaded!")
     return [X, y]
 
-p = data_gen(r"D:\2020-03-24 - ThT movies", 3, 60)
+def generateCNN(X, pretrained_weights = None): #generates convolutional layers based off the data
+    if pretrained_weights is None:
+        print("Warning, no model has been loaded")
+    mod = unet(pretrained_weights)  # load model
+
+    # prepare the data
+    X_nu = np.zeros(shape=(X.shape[0], (X.shape[1])**2))
+    print(X_nu.shape)
+    for i in range(X.shape[0]):
+         X_nu[i,:] = mod.predict(X[i,:,:])
+    return X_nu
+
+def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier to detect
+    X_sob = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
+    for i in range(X.shape[0]):
+
+        img = cv2.imread(Image.fromarray(X[i,:,:]))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(float)
+
+        edge_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+        edge_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+        edge = np.sqrt(edge_x ** 2 + edge_y ** 2)
+        print(type(edge))
+        X_sob[i,:] = edge
+    return X_sob
+
+
+
+
+
+p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 60)
 
 [X, y] = loadData(p)
+
 X = np.array(X)
 y = np.array(y)
+
+X = sobelFilter(X)
+
 print(X.shape[0])
 print(X.shape[1])
 print(y.shape)

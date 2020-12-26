@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
+import scipy.misc as sc
 from sklearn.preprocessing import normalize
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelBinarizer
@@ -73,7 +74,10 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
     X_sob = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
     for i in range(X.shape[0]):
 
-        img = cv2.imread(Image.fromarray(X[i,:,:]))
+        print(X[i,:,:].shape)
+
+        cv2.imwrite("tmp\img.jpg", X[i, :, :])
+        img = cv2.imread("tmp\img,jpg", 1)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(float)
 
         edge_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)

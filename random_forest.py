@@ -17,8 +17,6 @@ import os
 from imagery_to_data import data_gen
 from unet import unet
 
-
-
 def randomForest(data, response):
     X = data    # n x p x p (n = num samples, p = 256)            (this will eventually be convs)
     y = response    # n x 1 (n = num samples, 1 = res, 0 = sus)
@@ -31,7 +29,7 @@ def randomForest(data, response):
     #print(y_train)
     lb = LabelBinarizer()
     y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
-    rf = RandomForestClassifier(n_estimators=(1000), max_features="sqrt")
+    rf = RandomForestClassifier(n_estimators=(256*256), max_features="sqrt")
     rf.fit(X_train, y_train)
 
     recall = cross_val_score(rf, X_test, y_test, cv=5, scoring='recall')
@@ -71,27 +69,33 @@ def generateCNN(X, pretrained_weights = None): #generates convolutional layers b
     return X_nu
 
 def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier to detect
-    X_sob = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
+    X_sob = np.zeros(shape=(X.shape[0], X.shape[1], X.shape[1]))
+
     for i in range(X.shape[0]):
 
-        print(X[i,:,:].shape)
+        print(X.shape)
+        print(X_sob.shape)
 
-        cv2.imwrite("tmp\img.jpg", X[i, :, :])
-        img = cv2.imread("tmp\img,jpg", 1)
+
+        cv2.imwrite("tmp/img.jpg", X[i, :, :])
+        img = cv2.imread("tmp/img.jpg", 1)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(float)
 
         edge_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
         edge_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
         edge = np.sqrt(edge_x ** 2 + edge_y ** 2)
-        print(type(edge))
-        X_sob[i,:] = edge
+        print(edge.shape)
+        print(edge)
+
+        for j in range(edge.shape[0]):
+            for k in range(edge.shape[1]):
+                print("Shapes")
+                print(X_sob.shape)
+                print(edge.shape)
+                X_sob[i,j,k] = edge[j,k]
     return X_sob
 
-
-
-
-
-p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 60)
+p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 30)
 
 [X, y] = loadData(p)
 
@@ -109,6 +113,3 @@ print("acc", np.mean(dict["accuracy"]))
 print("f1",np.mean(dict["f1"]))
 print("precision", np.mean(dict["precision"]))
 print("recall", np.mean(dict["recall"]))
-
-
-

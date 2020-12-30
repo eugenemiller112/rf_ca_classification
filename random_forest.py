@@ -89,13 +89,13 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
 
         for j in range(edge.shape[0]):
             for k in range(edge.shape[1]):
-                print("Shapes")
-                print(X_sob.shape)
-                print(edge.shape)
+                #print("Shapes")
+                #print(X_sob.shape)
+                #print(edge.shape)
                 X_sob[i,j,k] = edge[j,k]
     return X_sob
 
-p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 30)
+p = data_gen(r"D:\2020-03-24 - ThT movies", 1, 5)
 
 [X, y] = loadData(p)
 

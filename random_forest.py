@@ -4,8 +4,6 @@ import numpy as np
 import cv2
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
-import scipy.misc as sc
-from sklearn.preprocessing import normalize
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import cross_val_score

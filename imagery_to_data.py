@@ -101,8 +101,8 @@ def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None)
             # Convert from array and save as image
 
 
-def data_gen(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
-    save = r"D:\ASD"
+def data_gen(save, data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
+
     now = datetime.now()
     date_time = now.strftime("%m-%d-%Y, %H-%M-%S")
     newdir = os.path.join(save, date_time)

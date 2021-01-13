@@ -95,7 +95,7 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
                 X_sob[i,j,k] = edge[j,k]
     return X_sob
 
-p = data_gen(r"D:\2020-03-24 - ThT movies", 1, 5)
+p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 30)
 
 [X, y] = loadData(p)
 

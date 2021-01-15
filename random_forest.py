@@ -24,20 +24,23 @@ def randomForest(data, response):
     print(X_nu.shape)
     for i in range(X.shape[0]):
          X_nu[i,:] = X[i,:,:].flatten()
-    #print(y)
+
     X_train, X_test, y_train, y_test = train_test_split(X_nu, y, test_size=0.2)
-    #print(y_train)
+
     lb = LabelBinarizer()
     y_train = np.array([number[0] for number in lb.fit_transform(y_train)])
     rf = RandomForestClassifier(n_estimators=(256*256), max_features="sqrt")
     rf.fit(X_train, y_train)
+
+    print("X_test", X_test.shape)
+    print("y_test", y_test.shape)
 
     recall = cross_val_score(rf, X_test, y_test, cv=5, scoring='recall')
     precision = cross_val_score(rf, X_test, y_test, cv=5, scoring='precision')
     accuracy = cross_val_score(rf, X_test, y_test, cv=5, scoring='accuracy')
     f1_score = cross_val_score(rf, X_test, y_test, cv=5, scoring='f1_macro')
 
-    return {'accuracy': accuracy, 'f1': f1_score, 'precision': precision, 'recall': recall}
+    return [{'accuracy': accuracy, 'f1': f1_score, 'precision': precision, 'recall': recall}, rf]
 
 def loadData(dir):
     i = 0
@@ -95,7 +98,7 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
                 X_sob[i,j,k] = edge[j,k]
     return X_sob
 
-p = data_gen(r"D:\2020-03-24 - ThT movies", 5, 30)
+p = data_gen(r"D:\RFtrain", 5, 30)
 
 [X, y] = loadData(p)
 
@@ -107,7 +110,33 @@ X = sobelFilter(X)
 print(X.shape[0])
 print(X.shape[1])
 print(y.shape)
-dict = randomForest(X, y)
+dict, rf = randomForest(X, y)
+
+tst = data_gen(r"D:\RFtest",5,30)
+
+[X_sig, y_sig] = loadData(tst)
+
+X_sig = np.array(X_sig)
+y_sig = np.array(y_sig)
+
+X_sig = sobelFilter(X_sig)
+
+X_nu = np.zeros(shape=(X_sig.shape[0], (X_sig.shape[1])**2))
+print(X_nu.shape)
+for i in range(X_sig.shape[0]):
+    X_nu[i,:] = X_sig[i,:,:].flatten()
+
+print("X_sig", X_nu.shape)
+print(X_nu.shape[0])
+print(X_nu.shape[1])
+print(y_sig.shape)
+
+recall = cross_val_score(rf, X_nu, y_sig, cv=5, scoring='recall')
+precision = cross_val_score(rf, X_nu, y_sig, cv=5, scoring='precision')
+accuracy = cross_val_score(rf, X_nu, y_sig, cv=5, scoring='accuracy')
+f1_score = cross_val_score(rf, X_nu, y_sig, cv=5, scoring='f1_macro')
+
+print("Precision, acc", precision, accuracy)
 
 print("acc", np.mean(dict["accuracy"]))
 print("f1",np.mean(dict["f1"]))

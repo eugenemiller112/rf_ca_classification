@@ -18,6 +18,7 @@ from imagery_to_data import data_gen
 from unet import unet
 
 def randomForest(data, response):
+    print("Begin randomForest fun")
     X = data    # n x p x p (n = num samples, p = 256)
     y = response    # n x 1 (n = num samples, 1 = res, 0 = sus)
     X_nu = np.zeros(shape=(X.shape[0], (X.shape[1])**2))
@@ -119,51 +120,51 @@ print("f1",np.mean(dict["f1"]))
 print("precision", np.mean(dict["precision"]))
 print("recall", np.mean(dict["recall"]))
 
-for i in range(30,180,10):
-    p = data_gen(r"D:\RFtrain", 5, i)
-
-    [X, y] = loadData(p)
-
-    X = np.array(X)
-    y = np.array(y)
-
-    X = sobelFilter(X)
-    X_nu = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
-    for i in range(X.shape[0]):
-         X_nu[i,:] = X[i,:,:].flatten()
-
-    recall = cross_val_score(rf, X_nu, y, cv=5, scoring='recall')
-    precision = cross_val_score(rf, X_nu, y, cv=5, scoring='precision')
-    accuracy = cross_val_score(rf, X_nu, y, cv=5, scoring='accuracy')
-    f1_score = cross_val_score(rf, X_nu, y, cv=5, scoring='f1_macro')
-
-    res["accuracy"].append(np.mean(accuracy))
-    res["f1"].append(np.mean(f1_score))
-    res["precision"].append(np.mean(precision))
-    res["recall"].append(np.mean(recall))
-    res["deltaT"].append(i)
-
-
-plt.figure(figsize=(10, 10))
-plt.plot(res['deltaT'], res['accuracy'])
-plt.xlabel("delta T")
-plt.ylabel("Accuracy")
-plt.show()
-
-plt.figure(figsize=(10, 10))
-plt.plot(res['deltaT'], res['f1'])
-plt.xlabel("delta T")
-plt.ylabel("F1 Score")
-plt.show()
-
-plt.figure(figsize=(10, 10))
-plt.plot(res['deltaT'], res['precision'])
-plt.xlabel("delta T")
-plt.ylabel("Precision")
-plt.show()
-
-plt.figure(figsize=(10, 10))
-plt.plot(res['deltaT'], res['recall'])
-plt.xlabel("delta T")
-plt.ylabel("Recall")
-plt.show()
+#for i in range(30,180,10):
+#    p = data_gen(r"D:\RFtrain", 5, i)
+#
+#    [X, y] = loadData(p)
+#
+#    X = np.array(X)
+#    y = np.array(y)
+#
+#    X = sobelFilter(X)
+#    X_nu = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
+#    for i in range(X.shape[0]):
+#         X_nu[i,:] = X[i,:,:].flatten()
+#
+#    recall = cross_val_score(rf, X_nu, y, cv=5, scoring='recall')
+#    precision = cross_val_score(rf, X_nu, y, cv=5, scoring='precision')
+#    accuracy = cross_val_score(rf, X_nu, y, cv=5, scoring='accuracy')
+#    f1_score = cross_val_score(rf, X_nu, y, cv=5, scoring='f1_macro')
+#
+#    res["accuracy"].append(np.mean(accuracy))
+#    res["f1"].append(np.mean(f1_score))
+#    res["precision"].append(np.mean(precision))
+#    res["recall"].append(np.mean(recall))
+#    res["deltaT"].append(i)
+#
+#
+#plt.figure(figsize=(10, 10))
+#plt.plot(res['deltaT'], res['accuracy'])
+#plt.xlabel("delta T")
+#plt.ylabel("Accuracy")
+#plt.show()
+#
+#plt.figure(figsize=(10, 10))
+#plt.plot(res['deltaT'], res['f1'])
+#plt.xlabel("delta T")
+#plt.ylabel("F1 Score")
+#plt.show()
+#
+#plt.figure(figsize=(10, 10))
+#plt.plot(res['deltaT'], res['precision'])
+#plt.xlabel("delta T")
+#plt.ylabel("Precision")
+#plt.show()
+#
+#plt.figure(figsize=(10, 10))
+#plt.plot(res['deltaT'], res['recall'])
+#plt.xlabel("delta T")
+#plt.ylabel("Recall")
+#plt.show()

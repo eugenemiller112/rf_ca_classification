@@ -26,7 +26,6 @@ def frame_extraction(video_dir, save_dir, final_frame, greyscale = False):
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         fileloc = os.path.join(video_dir, filename)  # file location as string
-        # filenoext = os.path.splitext(filename)[0]
         if filename.endswith(".avi"):  # all .avi videos
             vidcap = cv2.VideoCapture(fileloc)  # read video
             success, image = vidcap.read()

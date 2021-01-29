@@ -16,6 +16,8 @@ import os
 
 from imagery_to_data import data_gen
 from unet import unet
+from functions import low_activity_elim
+from laplace_of_gaussian import LoGFilter
 
 def randomForest(data, response):
     print("Begin randomForest fun")
@@ -101,14 +103,15 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
 
 res = {'accuracy': [], 'f1': [], 'precision': [], 'recall': [], 'deltaT': []}
 
-p = data_gen(r"D:\RFtrain", 5, 180)
+p = r"D:\ASD\01-22-2021, 15-29-12"
 
 [X, y] = loadData(p)
 
 X = np.array(X)
 y = np.array(y)
 
-X = sobelFilter(X)
+#X = sobelFilter(X)
+X = LoGFilter(X)
 
 print(X.shape[0])
 print(X.shape[1])
@@ -119,52 +122,3 @@ print("acc", np.mean(dict["accuracy"]))
 print("f1",np.mean(dict["f1"]))
 print("precision", np.mean(dict["precision"]))
 print("recall", np.mean(dict["recall"]))
-
-#for i in range(30,180,10):
-#    p = data_gen(r"D:\RFtrain", 5, i)
-#
-#    [X, y] = loadData(p)
-#
-#    X = np.array(X)
-#    y = np.array(y)
-#
-#    X = sobelFilter(X)
-#    X_nu = np.zeros(shape=(X.shape[0], (X.shape[1]) ** 2))
-#    for i in range(X.shape[0]):
-#         X_nu[i,:] = X[i,:,:].flatten()
-#
-#    recall = cross_val_score(rf, X_nu, y, cv=5, scoring='recall')
-#    precision = cross_val_score(rf, X_nu, y, cv=5, scoring='precision')
-#    accuracy = cross_val_score(rf, X_nu, y, cv=5, scoring='accuracy')
-#    f1_score = cross_val_score(rf, X_nu, y, cv=5, scoring='f1_macro')
-#
-#    res["accuracy"].append(np.mean(accuracy))
-#    res["f1"].append(np.mean(f1_score))
-#    res["precision"].append(np.mean(precision))
-#    res["recall"].append(np.mean(recall))
-#    res["deltaT"].append(i)
-#
-#
-#plt.figure(figsize=(10, 10))
-#plt.plot(res['deltaT'], res['accuracy'])
-#plt.xlabel("delta T")
-#plt.ylabel("Accuracy")
-#plt.show()
-#
-#plt.figure(figsize=(10, 10))
-#plt.plot(res['deltaT'], res['f1'])
-#plt.xlabel("delta T")
-#plt.ylabel("F1 Score")
-#plt.show()
-#
-#plt.figure(figsize=(10, 10))
-#plt.plot(res['deltaT'], res['precision'])
-#plt.xlabel("delta T")
-#plt.ylabel("Precision")
-#plt.show()
-#
-#plt.figure(figsize=(10, 10))
-#plt.plot(res['deltaT'], res['recall'])
-#plt.xlabel("delta T")
-#plt.ylabel("Recall")
-#plt.show()

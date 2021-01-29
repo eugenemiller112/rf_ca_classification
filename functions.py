@@ -1,5 +1,6 @@
 import os
 from PIL import Image, ImageStat
+from statistics import median
 
 # Returns the mean brightness of an image after converting to black/white
 def brightness(im_file):

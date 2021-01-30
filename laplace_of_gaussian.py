@@ -18,7 +18,7 @@ def LoGFilter(img):
             p = LoG[y, x]
             maxP = patch.max()
             minP = patch.min()
-            if (p > 0):
+            if (p.any()):
                 zeroCross = True if minP < 0 else False
             else:
                 zeroCross = True if maxP > 0 else False

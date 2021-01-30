@@ -14,6 +14,9 @@ import random
 
 import os, sys
 
+from laplace_of_gaussian import LoGFilter
+from sobel import sobelFilter
+
 print(cv2.__version__)
 
 # This code is modified from image_preprocessing.py @https://github.com/eugenemiller112/kralj_lab_2020
@@ -100,7 +103,7 @@ def diff_imager(read_dir, save_dir, first_frame, last_frame, saved_frame = None)
             # Convert from array and save as image
 
 
-def data_gen(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
+def data_gen_diff(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
     save = r"D:\ASD"
     now = datetime.now()
     date_time = now.strftime("%m-%d-%Y, %H-%M-%S")
@@ -151,6 +154,109 @@ def data_gen(data_path, small_delta, diff_upper_bound):    #data path assumed to
         print(save)
     return newdir
 
+def data_gen_sobel_diff(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
+    save = r"D:\ASD"
+    now = datetime.now()
+    date_time = now.strftime("%m-%d-%Y, %H-%M-%S")
+    newdir = os.path.join(save, date_time)
+    os.mkdir(newdir)
+
+
+    for cl in os.listdir(data_path):
+        os.mkdir(os.path.join(newdir, cl))
+        save = os.path.join(newdir, cl)
+        temp_dir = tempfile.mkdtemp()
+        temp_frames_dir = os.path.join(temp_dir, "framestemp"+str(cl))
+        viddir = os.path.join(data_path,cl)
+        frame_extraction(viddir, temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
+
+        for vid in os.listdir(temp_frames_dir):
+            p = os.path.join(temp_frames_dir, vid)
+            for fl in os.listdir(p):
+                print("fl", fl)
+                trim(os.path.join(p,fl)) # Trim frames
+                im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
+                im = sobelFilter(im)
+                im.save(os.path.join(p,fl)) # Resize them
+
+        # Generate diff images
+
+        for fl in os.listdir(temp_frames_dir):
+
+            path = os.path.join(temp_frames_dir, fl)
+
+            print("path",path)
+
+            savedframes = np.empty(diff_upper_bound,
+                                            dtype=object)  # array of proper size is declared
+
+            for i in range(0, diff_upper_bound):
+                if i + 1 >= small_delta:
+                    savedframes[i] = diff_imager(path, save, i, i+small_delta, saved_frame = savedframes[i-diff_upper_bound])
+                    continue
+                savedframes[i] = diff_imager(path, save, i, i + small_delta)
+
+
+
+
+        print(temp_frames_dir)
+        print(os.listdir(temp_frames_dir))
+        shutil.rmtree(temp_frames_dir)
+        print("Done")
+        print(save)
+    return newdir
+
+def data_gen_LoG_diff(data_path, small_delta, diff_upper_bound):    #data path assumed to have videos of AVIS separated into folders based on class
+    save = r"D:\ASD"
+    now = datetime.now()
+    date_time = now.strftime("%m-%d-%Y, %H-%M-%S")
+    newdir = os.path.join(save, date_time)
+    os.mkdir(newdir)
+
+
+    for cl in os.listdir(data_path):
+        os.mkdir(os.path.join(newdir, cl))
+        save = os.path.join(newdir, cl)
+        temp_dir = tempfile.mkdtemp()
+        temp_frames_dir = os.path.join(temp_dir, "framestemp"+str(cl))
+        viddir = os.path.join(data_path,cl)
+        frame_extraction(viddir, temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
+
+        for vid in os.listdir(temp_frames_dir):
+            p = os.path.join(temp_frames_dir, vid)
+            for fl in os.listdir(p):
+                print("fl", fl)
+                trim(os.path.join(p,fl)) # Trim frames
+                im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
+                im = LoGFilter(im)
+                im.save(os.path.join(p,fl)) # Resize them
+
+        # Generate diff images
+
+        for fl in os.listdir(temp_frames_dir):
+
+            path = os.path.join(temp_frames_dir, fl)
+
+            print("path",path)
+
+            savedframes = np.empty(diff_upper_bound,
+                                            dtype=object)  # array of proper size is declared
+
+            for i in range(0, diff_upper_bound):
+                if i + 1 >= small_delta:
+                    savedframes[i] = diff_imager(path, save, i, i+small_delta, saved_frame = savedframes[i-diff_upper_bound])
+                    continue
+                savedframes[i] = diff_imager(path, save, i, i + small_delta)
+
+
+
+
+        print(temp_frames_dir)
+        print(os.listdir(temp_frames_dir))
+        shutil.rmtree(temp_frames_dir)
+        print("Done")
+        print(save)
+    return newdir
 
 
 

@@ -14,10 +14,13 @@ from sklearn.model_selection import train_test_split
 import sys
 import os
 
-from imagery_to_data import data_gen
+from imagery_to_data import data_gen_diff as data_gen
+from imagery_to_data import data_gen_sobel_diff as data_gen2
+from imagery_to_data import data_gen_LoG_diff as data_gen3
 from unet import unet
 from functions import low_activity_elim
 from laplace_of_gaussian import LoGFilter
+from sobel import sobelFilter
 
 def randomForest(data, response):
     print("Begin randomForest fun")
@@ -74,35 +77,9 @@ def generateCNN(X, pretrained_weights = None): #generates convolutional layers b
          X_nu[i,:] = mod.predict(X[i,:,:])
     return X_nu
 
-def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier to detect
-    X_sob = np.zeros(shape=(X.shape[0], X.shape[1], X.shape[1]))
-
-    for i in range(X.shape[0]):
-
-        print(X.shape)
-        print(X_sob.shape)
-
-
-        cv2.imwrite("tmp/img.jpg", X[i, :, :])
-        img = cv2.imread("tmp/img.jpg", 1)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(float)
-
-        edge_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
-        edge_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
-        edge = np.sqrt(edge_x ** 2 + edge_y ** 2)
-        print(edge.shape)
-        print(edge)
-
-        for j in range(edge.shape[0]):
-            for k in range(edge.shape[1]):
-                #print("Shapes")
-                #print(X_sob.shape)
-                #print(edge.shape)
-                X_sob[i,j,k] = edge[j,k]
-    return X_sob
 
 res = {'accuracy': [], 'f1': [], 'precision': [], 'recall': [], 'deltaT': []}
-
+# p = data_gen(r"D:\RFtrain", 5, 180)
 p = r"D:\ASD\01-22-2021, 15-29-12"
 
 [X, y] = loadData(p)
@@ -110,15 +87,20 @@ p = r"D:\ASD\01-22-2021, 15-29-12"
 X = np.array(X)
 y = np.array(y)
 
-#X = sobelFilter(X)
-X = LoGFilter(X)
+X_1 = sobelFilter(X)
+X_2 = LoGFilter(X)
 
-print(X.shape[0])
-print(X.shape[1])
-print(y.shape)
-dict, rf = randomForest(X, y)
 
-print("acc", np.mean(dict["accuracy"]))
-print("f1",np.mean(dict["f1"]))
-print("precision", np.mean(dict["precision"]))
-print("recall", np.mean(dict["recall"]))
+dict_1, rf_1 = randomForest(X_1, y)
+dict_2, rf_2 = randomForest(X_2, y)
+
+print("acc", np.mean(dict_1["accuracy"]))
+print("f1",np.mean(dict_1["f1"]))
+print("precision", np.mean(dict_1["precision"]))
+print("recall", np.mean(dict_1["recall"]))
+
+print("acc 2", np.mean(dict_2["accuracy"]))
+print("f1 2",np.mean(dict_2["f1"]))
+print("precision 2", np.mean(dict_2["precision"]))
+print("recall 2", np.mean(dict_2["recall"]))
+

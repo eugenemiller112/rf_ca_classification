@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 
 def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier to detect
-    X_sob = np.zeros(shape=(X.shape[0], X.shape[1], X.shape[1]))
+    X = np.array(X)
+    X_sob = np.zeros((X.shape[0], X.shape[1]))
 
     for i in range(X.shape[0]):
 
@@ -17,5 +18,5 @@ def sobelFilter(X): #adds a filter from the cv2 library that makes edges easier 
         for j in range(edge.shape[0]):
             for k in range(edge.shape[1]):
 
-                X_sob[i,j,k] = edge[j,k]
+                X_sob[j,k] = edge[j,k]
     return X_sob

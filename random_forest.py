@@ -79,20 +79,29 @@ def generateCNN(X, pretrained_weights = None): #generates convolutional layers b
 
 
 res = {'accuracy': [], 'f1': [], 'precision': [], 'recall': [], 'deltaT': []}
-# p = data_gen(r"D:\RFtrain", 5, 180)
-p = r"D:\ASD\01-22-2021, 15-29-12"
 
-[X, y] = loadData(p)
-
-X = np.array(X)
-y = np.array(y)
-
-X_1 = sobelFilter(X)
-X_2 = LoGFilter(X)
+p1 = data_gen(r"D:\RFtrain", 5, 30)
+p2 = data_gen2(r"D:\RFtrain", 5, 30)
+p3 = data_gen3(r"D:\RFtrain", 5, 30)
 
 
-dict_1, rf_1 = randomForest(X_1, y)
-dict_2, rf_2 = randomForest(X_2, y)
+[X1, y1] = loadData(p1)
+[X2, y2] = loadData(p2)
+[X3, y3] = loadData(p3)
+
+X1 = np.array(X1)
+y1 = np.array(y1)
+
+X2 = np.array(X2)
+y2 = np.array(y2)
+
+X3 = np.array(X3)
+y3 = np.array(y3)
+
+
+dict_1, rf_1 = randomForest(X1, y1)
+dict_2, rf_2 = randomForest(X2, y2)
+dict_3, rf_3 = randomForest(X3, y3)
 
 print("acc", np.mean(dict_1["accuracy"]))
 print("f1",np.mean(dict_1["f1"]))
@@ -103,4 +112,9 @@ print("acc 2", np.mean(dict_2["accuracy"]))
 print("f1 2",np.mean(dict_2["f1"]))
 print("precision 2", np.mean(dict_2["precision"]))
 print("recall 2", np.mean(dict_2["recall"]))
+
+print("acc 3", np.mean(dict_3["accuracy"]))
+print("f1 3",np.mean(dict_3["f1"]))
+print("precision 3", np.mean(dict_3["precision"]))
+print("recall 3", np.mean(dict_3["recall"]))
 

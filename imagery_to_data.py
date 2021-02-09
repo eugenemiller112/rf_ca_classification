@@ -177,6 +177,7 @@ def data_gen_sobel_diff(data_path, small_delta, diff_upper_bound):    #data path
                 trim(os.path.join(p,fl)) # Trim frames
                 im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
                 im = sobelFilter(im)
+                im = Image.fromarray(im, mode="RGB")
                 im.save(os.path.join(p,fl)) # Resize them
 
         # Generate diff images
@@ -229,6 +230,7 @@ def data_gen_LoG_diff(data_path, small_delta, diff_upper_bound):    #data path a
                 trim(os.path.join(p,fl)) # Trim frames
                 im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
                 im = LoGFilter(im)
+                im = Image.fromarray(im, mode="RGB")
                 im.save(os.path.join(p,fl)) # Resize them
 
         # Generate diff images

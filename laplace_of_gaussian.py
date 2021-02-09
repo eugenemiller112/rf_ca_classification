@@ -6,6 +6,7 @@ from skimage import data
 
 
 def LoGFilter(img):
+    img = np.array(img)
     LoG = gaussian_laplace(img, 2)
     thresh = np.absolute(LoG).mean() * 0.75
     output = np.zeros(LoG.shape)

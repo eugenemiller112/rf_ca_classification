@@ -168,7 +168,7 @@ def data_gen_sobel_diff(data_path, small_delta, diff_upper_bound):    #data path
         temp_dir = tempfile.mkdtemp()
         temp_frames_dir = os.path.join(temp_dir, "framestemp"+str(cl))
         viddir = os.path.join(data_path,cl)
-        frame_extraction(viddir, temp_frames_dir, (diff_upper_bound + small_delta), greyscale=True)   # Read videos
+        frame_extraction(viddir, temp_frames_dir, diff_upper_bound , greyscale=True)   # Read videos
 
         for vid in os.listdir(temp_frames_dir):
             p = os.path.join(temp_frames_dir, vid)
@@ -191,7 +191,7 @@ def data_gen_sobel_diff(data_path, small_delta, diff_upper_bound):    #data path
             savedframes = np.empty(diff_upper_bound,
                                             dtype=object)  # array of proper size is declared
 
-            for i in range(0, diff_upper_bound):
+            for i in range(0, diff_upper_bound - small_delta):
                 if i + 1 >= small_delta:
                     savedframes[i] = diff_imager(path, save, i, i+small_delta, saved_frame = savedframes[i-diff_upper_bound])
                     continue

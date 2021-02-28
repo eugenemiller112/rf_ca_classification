@@ -80,9 +80,9 @@ def generateCNN(X, pretrained_weights = None): #generates convolutional layers b
 
 res = {'accuracy': [], 'f1': [], 'precision': [], 'recall': [], 'deltaT': []}
 
-p1 = data_gen(r"D:\RFtrain", 5, 30)
+#p1 = data_gen(r"D:\RFtrain", 5, 30)
 
-[X1, y1] = loadData(p1)
+[X1, y1] = loadData(r'C:\Users\eugmille\Desktop\2-28-2021 Kan Dat')
 
 X1 = np.array(X1)
 y1 = np.array(y1)

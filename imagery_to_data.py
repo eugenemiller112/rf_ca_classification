@@ -14,7 +14,7 @@ import random
 
 import os, sys
 
-from laplace_of_gaussian import LoGFilter
+#from laplace_of_gaussian import LoGFilter
 from sobel import sobelFilter
 from scipy import ndimage
 
@@ -276,6 +276,8 @@ def data_gen_sobel_diff(data_path, small_delta, diff_upper_bound):    #data path
             for fl in os.listdir(p):
                 print("fl", fl)
                 trim(os.path.join(p,fl)) # Trim frames
+                print(os.path.join(p,fl))
+                quit()
                 im = Image.fromarray(resize_squishy(os.path.join(p,fl), 256))
                 im = sobelFilter(im)
                 im = Image.fromarray(im, mode="RGB")
@@ -363,4 +365,4 @@ def data_gen_LoG_diff(data_path, small_delta, diff_upper_bound):    #data path a
 
 
 
-data_gen_sobel_diff_figs(r'C:\Users\eugmille\Desktop\Fig Dat - Kan Only', 5, 240)
+#data_gen_sobel_diff_figs(r'C:\Users\eugmille\Desktop\Fig Dat - Kan Only', 5, 240)
